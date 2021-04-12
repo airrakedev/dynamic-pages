@@ -1,0 +1,46 @@
+form:{
+	address:''
+	chocolate:true,
+	email:'',
+	name:''
+	otherTreat: false,
+	password:'',
+	plan:{},
+	recipient:''
+}
+
+emailCheckInDB: boolean
+existingUser:boolean
+wrongPassword:boolean - serves as the validator correct(return !this.wrongPassword)
+
+
+
+asyncState:'null/ pending/success' - for loading purpose
+steps:[
+	'FormPlanPicker',
+	'FornUserDetails',
+	'FormAddress',
+	'FormReviewOrder'
+]
+
+
+user:{
+	email:'',
+	password:'',
+	name:''
+}
+
+
+checkIfUserExistInDB - check email
+authenticateUser - check email and password
+
+reset(){
+
+reset the name email password on form inputs and the boolean checker related
+this.$v.reset()
+
+}
+
+Thank you
+We look forward to shipping you your first box!
+Go Somewhere Cool!
