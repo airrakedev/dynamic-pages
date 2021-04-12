@@ -106,7 +106,6 @@ export default {
          this.$emit('atNext')
       },
       submit () {
-         console.log(this.selectedPlan, 'plan picker submit')
          if (Object.keys(this.selectedPlan).length < 1) {
             this.error = true
             this.errorMessage = 'Please select a plan before continuing.'

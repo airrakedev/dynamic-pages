@@ -9,25 +9,25 @@
             class="pt-0 dont-move"
          >
             <transition name="slide">
-               <!-- <keep-alive> -->
-               <component
-                  :is="loadedForm"
-                  :ref="loadedForm"
-                  :key="loadedForm"
-                  :form="form"
-                  @atNext="proceedToNext"
-               >
-                  <v-progress-linear
-                     v-model="stepLevel"
-                     :color="stepperColorValue"
-                     height="25"
+               <keep-alive>
+                  <component
+                     :is="loadedForm"
+                     :ref="loadedForm"
+                     :key="loadedForm"
+                     :form="form"
+                     @atNext="proceedToNext"
                   >
-                     <template v-slot:default="{ value }">
-                        <strong>{{stepLevel }}%</strong>
-                     </template>
-                  </v-progress-linear>
-               </component>
-               <!-- </keep-alive> -->
+                     <v-progress-linear
+                        v-model="stepLevel"
+                        :color="stepperColorValue"
+                        height="25"
+                     >
+                        <template v-slot:default="{ value }">
+                           <strong>{{stepLevel }}%</strong>
+                        </template>
+                     </v-progress-linear>
+                  </component>
+               </keep-alive>
             </transition>
          </v-col>
       </v-row>
@@ -135,13 +135,14 @@ export default {
       },
       clickBack () {
          this.stepper--
+         this.proceedToNext()
       },
       proceed () {
          if (this.isLastForm) {
             this.$refs[this.loadedForm].submit().then(data => {
                if (data) {
                   this.clickNext()
-                  this.isNext = false
+                  // this.isNext = false
                }
             }).catch(error => console.log(error, 'Boom error'))
          } else {

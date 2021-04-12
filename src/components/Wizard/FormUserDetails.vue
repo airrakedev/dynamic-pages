@@ -42,6 +42,7 @@
                      <v-text-field
                         v-model="form.email"
                         :error-messages="emailErrors"
+                        :disabled="loginStatus"
                         placeholder="Email"
                         solo
                         hide-details="auto"
@@ -94,8 +95,11 @@
                      <v-text-field
                         v-model="form.password"
                         :error-messages="passwordErrors"
-                        type="password"
+                        :type="showPassword? 'text' : 'password'"
+                        :disabled="loginStatus"
                         placeholder="password"
+                        :append-icon="!showPassword? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                        @click:append="showPassword = !showPassword"
                         solo
                         required
                         hide-details="auto"
@@ -114,7 +118,16 @@
                         color="teal"
                         class="white--text"
                         @click="login"
-                     >Login</Button>
+                     >
+                        <v-progress-circular
+                           v-if="loginStatus"
+                           :width="3"
+                           color="teal darken-2"
+                           indeterminate
+                           class="mr-2"
+                        ></v-progress-circular>
+                        Login
+                     </Button>
                   </v-col>
                </v-row>
                <v-row
@@ -184,7 +197,9 @@ export default {
       isUserExisting: false,
       checkEmailInDb: false,
       wrongPassword: false,
-      checkEmailProgress: false
+      checkEmailProgress: false,
+      loginStatus: false,
+      showPassword: false
    }),
 
    computed: {
@@ -216,65 +231,83 @@ export default {
          this.checkEmailProgress = false
          this.isUserExisting = false
          this.checkEmailInDb = false
+         this.$v.$reset()
+         this.moveNext(false)
+         this.form.name = ""
+         this.form.password = ""
 
          if (event.key === 'Enter') {
-
-            console.log(event.key, "event")
-            this.$v.form.email.$touch()
-            // check email is valid
-            if (this.$v.form.email.$invalid) {
-               this.checkEmailProgress = true
-               return
-            }
-
-            this.checkEmailProgress = true
-            this.checkEmail(this.form.email)
-               .then(checkEmail => {
-                  this.checkEmailInDb = true
-                  this.isUserExisting = false
-                  this.checkEmailProgress = false
-               })
-               .catch(error => {
-                  this.isUserExisting = true
-                  this.checkEmailInDb = false
-                  this.checkEmailProgress = false
-               })
+            this.validateUserEmail()
          }
       },
+      validateUserEmail () {
+         // check if validation got dirty
+         this.$v.form.email.$touch()
+         // check email is valid
+         if (this.$v.form.email.$invalid) {
+            this.checkEmailProgress = true
+            return
+         }
+         this.checkEmailProgress = true
+         this.checkEmail(this.form.email)
+            .then(checkEmail => {
+               this.checkEmailInDb = true
+               this.isUserExisting = false
+               this.checkEmailProgress = false
+            })
+            .catch(error => {
+               this.isUserExisting = true
+               this.checkEmailInDb = false
+               this.checkEmailProgress = false
+            })
+      },
       submitUserDetails (e) {
-         console.log(e.key, "boom")
-         this.$emit('atNext', false)
          if (e.key === "Enter") {
             this.$v.form.name.$touch()
 
             if (this.$v.form.name.$invalid) {
+               this.moveNext(false)
                return
+            } else {
+               this.$emit('atNext')
             }
-            this.$emit('atNext')
          }
       },
       login () {
+         this.$v.$reset()
          this.$v.$touch()
-         console.log('login')
-         if (!this.$v.form.email.$invalid && !this.$v.form.password.$invalid) {
+         if (!this.$v.form.email.$invalid && this.$v.form.password.required) {
             const { email, password } = this.form
+            this.loginStatus = true
+            this.moveNext(false)
             this.checkAccount({ email, password })
                .then(data => {
-                  console.log(data, "boom")
+                  this.loginStatus = false
+                  this.wrongPassword = false
+                  Object.assign(this.form, data)
+                  this.moveNext()
                })
-               .catch(err => console.log(err, "error on user login"))
+               .catch(err => {
+                  this.wrongPassword = true
+                  this.loginStatus = false
+                  // reset the form contents
+                  this.form.name = ''
+               })
          }
       },
       submit () {
          this.$v.$touch()
          if (this.$v.$invalid) {
-            this.$emit('atNext')
+            this.moveNext(false)
+            this.validateUserEmail()
             return Promise.reject("Validation fails")
          } else {
             return Promise.resolve(this.form)
          }
       },
-
+      moveNext (status = true) {
+         this.$emit('atNext', status)
+      }
    }
 }
 </script>
