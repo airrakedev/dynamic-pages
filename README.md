@@ -24,5 +24,5 @@ Pass: password
 
 ### App link can be found here:
 ```
-https://hot-coffee.netlify.app/
+<a href="https://hot-coffee.netlify.app/">Awesome Coffee</a>
 ```
