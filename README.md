@@ -1,4 +1,4 @@
-# form-wizard
+# Dynamic Form Wizard
 
 ## Project setup
 ```
