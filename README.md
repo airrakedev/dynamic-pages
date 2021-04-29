@@ -22,3 +22,7 @@ Email: email@mail.com
 Pass: password
 ```
 
+### App link can be found here:
+```
+https://hot-coffee.netlify.app/
+```
