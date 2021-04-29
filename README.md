@@ -16,7 +16,7 @@ npm run build
 ```
 
 ### A Dynamic Reusable Components
-##A stepper like form for processing coffee plan offer.
+A stepper like form for processing coffee plan offer.
 ```
 Email: email@mail.com
 Pass: password
